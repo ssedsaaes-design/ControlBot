@@ -53,8 +53,8 @@ whitelist+ (username)
 whitelist- (username)
 admin+ (username)
 admin- (username)
-jork (speed)
-unjork
+goon (speed)
+ungoon
 frontflip
 backflip
 freeze
