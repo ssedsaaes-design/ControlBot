@@ -648,84 +648,126 @@ if LocalPLR.Name ~= Username then
             end
         end
 
--- GOON(yep under 4k):
-if msg:sub(1, 5) == Prefix .. "goon" then
-    local args = getArgs(msg:sub(7))
-    local speed = tonumber(args[1]) or 1
+-- NOTE: Only relevant sections shown fully fixed (command system refactored)
 
-    function runCode()
-        goonAnim = Instance.new("Animation")
-        goonAnim.AnimationId = "rbxassetid://99198989"
+-- ADD THIS FUNCTION ABOVE commands():
+local function parseCommand(msg, Prefix)
+    if msg:sub(1, #Prefix) ~= Prefix then return nil end
 
-        animTrack = LocalPLR.Character.Humanoid:LoadAnimation(goonAnim)
-        animTrack.Looped = true
-        animTrack:Play()
-        animTrack:AdjustSpeed(speed)
+    local content = msg:sub(#Prefix + 1)
+    local args = {}
 
-        goonAnim2 = Instance.new("Animation")
-        goonAnim2.AnimationId = "rbxassetid://168086975"
-
-        animTrack2 = LocalPLR.Character.Humanoid:LoadAnimation(goonAnim2)
-        animTrack2.Looped = true
-        animTrack2:Play()
+    for word in content:gmatch("%S+") do
+        table.insert(args, word)
     end
 
-    specifyBots2(args, 2, runCode)
+    local cmd = args[1]
+    table.remove(args, 1)
+
+    return cmd, args
 end
 
-if msg:sub(1, 7) == Prefix .. "ungoon" then
 
-    function runCode()
-        if goonAnim then
-            goonAnim:Destroy()
-            animTrack:Stop()
+-- REPLACE START OF commands FUNCTION LOGIC WITH:
+function commands(player, message)
+    local msg = message:lower()
+
+    if not isWhitelisted(player.Name) then
+        return
+    end
+
+    local cmd, args = parseCommand(msg, Prefix)
+    if not cmd then return end
+
+    function getFullPlayerName(typedName)
+        if typedName == "me" then
+            return player.Name
         end
 
-        if goonAnim2 then
-            goonAnim2:Destroy()
-            animTrack2:Stop()
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if string.find(plr.Name, typedName) then
+                return plr.Name
+            end
         end
     end
 
-    specifyBots(msg:sub(9), runCode)
-end
+    -- GOON
+    if cmd == "goon" then
+        local speed = tonumber(args[1]) or 1
 
--- ORBIT:
-if msg:sub(1, 6) == Prefix .. "orbit" then
+        function runCode()
+            goonAnim = Instance.new("Animation")
+            goonAnim.AnimationId = "rbxassetid://99198989"
 
-    local args = getArgs(message:sub(8))
-    local targetPLR = getFullPlayerName(args[1])
+            animTrack = LocalPLR.Character.Humanoid:LoadAnimation(goonAnim)
+            animTrack.Looped = true
+            animTrack:Play()
+            animTrack:AdjustSpeed(speed)
 
-    local player = game.Players[targetPLR].Character.HumanoidRootPart
-    local lpr = LocalPLR.Character.HumanoidRootPart
+            goonAnim2 = Instance.new("Animation")
+            goonAnim2.AnimationId = "rbxassetid://168086975"
 
-    local speed = tonumber(args[2]) or 8
-    local radius = 8
-    local spacing = tonumber(args[3]) or 1
-    local eclipse = 1
+            animTrack2 = LocalPLR.Character.Humanoid:LoadAnimation(goonAnim2)
+            animTrack2.Looped = true
+            animTrack2:Play()
+        end
 
-    local sin, cos = math.sin, math.cos
-    local rotspeed = math.pi*2/speed
-    eclipse = eclipse * radius
-
-    local rot = 0
-
-    function runCode()
-        workspace.Gravity = 0
-
-        orbit1 = game:GetService("RunService").Stepped:connect(function(t, dt)
-            rot = rot + dt * rotspeed
-
-            local offsetAngle = rot - (index * spacing)
-            local offset = Vector3.new(sin(offsetAngle) * eclipse, 0, cos(offsetAngle) * radius)
-            local newPosition = player.Position + offset
-
-            lpr.CFrame = CFrame.new(newPosition, player.Position)
-        end)
+        specifyBots2(args, 2, runCode)
     end
 
-    specifyBots2(args, 4, runCode)
+    -- UNGOON
+    if cmd == "ungoon" then
+        function runCode()
+            if goonAnim then
+                goonAnim:Destroy()
+                animTrack:Stop()
+            end
+
+            if goonAnim2 then
+                goonAnim2:Destroy()
+                animTrack2:Stop()
+            end
+        end
+
+        specifyBots(table.concat(args, " "), runCode)
+    end
+
+    -- ORBIT
+    if cmd == "orbit" then
+        local targetPLR = getFullPlayerName(args[1])
+
+        local player = game.Players[targetPLR].Character.HumanoidRootPart
+        local lpr = LocalPLR.Character.HumanoidRootPart
+
+        local speed = tonumber(args[2]) or 8
+        local radius = 8
+        local spacing = tonumber(args[3]) or 1
+        local eclipse = 1
+
+        local sin, cos = math.sin, math.cos
+        local rotspeed = math.pi*2/speed
+        eclipse = eclipse * radius
+
+        local rot = 0
+
+        function runCode()
+            workspace.Gravity = 0
+
+            orbit1 = game:GetService("RunService").Stepped:Connect(function(t, dt)
+                rot = rot + dt * rotspeed
+
+                local offsetAngle = rot - (index * spacing)
+                local offset = Vector3.new(sin(offsetAngle) * eclipse, 0, cos(offsetAngle) * radius)
+                local newPosition = player.Position + offset
+
+                lpr.CFrame = CFrame.new(newPosition, player.Position)
+            end)
+        end
+
+        specifyBots2(args, 4, runCode)
+    end
 end
+        
         -- 2ORBIT:
         if msg:sub(1, 7) == Prefix .. "2orbit" then
 
