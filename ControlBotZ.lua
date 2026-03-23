@@ -647,7 +647,7 @@ if LocalPLR.Name ~= Username then
         end
 
         -- JORK(yep under 4k):
-        if msg:sub(1, 5) == Prefix .. "jork" then
+        if msg:sub(1, 5) == Prefix .. "goon" then
             local args = getArgs(msg:sub(7))
             local speed = tonumber(args[1]) or 1
 
