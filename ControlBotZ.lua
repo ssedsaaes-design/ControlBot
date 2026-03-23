@@ -1,3 +1,4 @@
+
 --[[
 ██████╗ ██╗   ██╗    ███████╗██╗██╗  ██╗██████╗ ███████╗███╗   ██╗███╗   ██╗██╗   ██╗     ███████╗ ██████╗ ██╗  ██╗██╗  ██╗
 ██╔══██╗╚██╗ ██╔╝    ██╔════╝██║╚██╗██╔╝██╔══██╗██╔════╝████╗  ██║████╗  ██║╚██╗ ██╔╝     ██╔════╝██╔═══██╗╚██╗██╔╝██║  ██║
@@ -66,9 +67,10 @@ if LocalPLR.Name ~= Username then
 
     end
 
+    chat("ControlBotZ Running!")
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Thank You",
-        Text = "Thank you for using ControlBot!",
+        Text = "Thank you for using ControlBotZ!",
         Time = 6
     })
 
@@ -647,7 +649,7 @@ if LocalPLR.Name ~= Username then
         end
 
         -- JORK(yep under 4k):
-        if msg:sub(1, 5) == Prefix .. "jork" then
+        if msg:sub(1, 5) == Prefix .. "goon" then
             local args = getArgs(msg:sub(7))
             local speed = tonumber(args[1]) or 1
 
